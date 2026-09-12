@@ -1,5 +1,21 @@
 # microk8s-components
 
+## microk8s
+```BASH
+snap install microk8s --classic
+microk8s status
+microk8s kubectl get nodes
+microk8s config > microk8s-config.yaml
+
+# Add your current user to the microk8s group
+sudo usermod -a -G microk8s $USER
+mkdir -p ~/.kube
+chmod 0700 ~/.kube
+
+# Refresh group memberships
+newgrp microk8s
+```
+
 ## ArgoCD
 
 ### Installation
