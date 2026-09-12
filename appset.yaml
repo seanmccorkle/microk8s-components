@@ -15,7 +15,7 @@ spec:
   generators:
     # Git Files generator - reads application config from each app directory
     - git:
-        repoURL: git@github.com/seanmccorkle/microk8s-components.git
+        repoURL: git@github.com:seanmccorkle/microk8s-components.git
         revision: HEAD
         files:
           - path: "apps/*/config.yaml"
