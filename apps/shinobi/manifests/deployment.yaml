@@ -1,0 +1,29 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shinobi
+  labels:
+    app: shinobi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shinobi
+  template:
+    metadata:
+      labels:
+        app: shinobi
+    spec:
+      containers:
+      - name: shinobi
+        image: shinobiinc/shinobi:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: shinobi-storage
+          mountPath: /opt/shinobi/videos
+      volumes:
+      - name: shinobi-storage
+        persistentVolumeClaim:
+          claimName: shinobi-pvc
