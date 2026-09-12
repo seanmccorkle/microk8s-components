@@ -27,4 +27,10 @@ argocd login localhost:8080 --insecure
 argocd logout localhost:8080
 ```
 
-###
+### SSH Keys
+```BASH
+ssh-keygen -t ed25519 -C "argocd-github-key" -f ./id_ed25519_argocd -N ""
+ssh-keygen -l -f id_ed25519_argocd
+ssh-keygen -l -f id_ed25519_argocd.pub
+ssh -T git@github.com -i  id_ed25519_argocd
+```
