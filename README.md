@@ -50,3 +50,6 @@ ssh-keygen -l -f id_ed25519_argocd
 ssh-keygen -l -f id_ed25519_argocd.pub
 ssh -T git@github.com -i  id_ed25519_argocd
 ```
+
+**Note when configuring a GitHub repository, with SSH key, save as a credentials template**
+
