@@ -14,6 +14,17 @@ chmod 0700 ~/.kube
 
 # Refresh group memberships
 newgrp microk8s
+
+# enable community repo
+microk8s enable community
+microk8s addons repo list
+
+# cilium
+microk8s enable cilium
+microk8s cilium status
+microk8s cilium hubble enable
+microk8s cilium hubble enable --ui
+kubectl port-forward -n kube-system svc/hubble-ui 12000:80
 ```
 
 ## ArgoCD
