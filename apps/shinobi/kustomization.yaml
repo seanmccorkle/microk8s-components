@@ -6,5 +6,6 @@ namespace: shinobi
 resources:
   - manifests/deployment.yaml
   - manifests/ingress.yaml
+  - manifests/middleware.yaml
   - manifests/pvc.yaml
   - manifests/service.yaml

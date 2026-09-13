@@ -4,9 +4,9 @@ kind: Ingress
 metadata:
   name: shinobi-ingress
   annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "0" # Allows heavy camera data streams
+    traefik.ingress.kubernetes.io/router.middlewares: shinobi-shinobi-buffering@kubernetescrd
 spec:
-  ingressClassName: public
+  ingressClassName: traefik
   rules:
   - host: shinobi.local # map this to your public domain
     http:
