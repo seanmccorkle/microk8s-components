@@ -1,19 +1,19 @@
 # Overview
 
-To test Cilium, as the Container Network Interface (CNI), and Traefik, as the Ingress Controller, use a simple web application that can demonstrate path routing, load balancing, and network policies. Both the `traefik/whoami` and `hashicorp/http-echo` containers echo back HTTP request details (IPs, headers, hostname) making it easy to verify if Cilium and Traefik are working correctly.
+To test Cilium, as the Container Network Interface (CNI), and Traefik, as the Ingress Controller, use a simple web application that can demonstrate path routing, load balancing, and network policies. Both the `traefik/whoami` and `hashicorp/http-echo` containers can be utilized for testing though `traefik/whoami` will echo back HTTP request details (IPs, headers, hostname). Both make it easy to verify if Cilium and Traefik are working correctly. Another option, use `mendhak/http-https-echo` and configure port `8080`.
 
 # Test Traefik
 
 Identify the Traefik LoadBalancer external IP
 ```BASH
-kubectl get svc -n traefik
+export TRAEFIK_IP=`kubectl get svc -n ingress -o jsonpath='{.items[].status.loadBalancer.ingress[0]}' | jq -r '.ip'`
 ```
 
 Curl the endpoints
 
 ```BASH
-curl http://<TRAEFIK_IP>/v1 -> Should return details from an app-v1 pod
-curl http://<TRAEFIK_IP>/v2 -> Should return details from an app-v2 pod
+curl http://$TRAEFIK_IP/v1 -> Should return details from an app-v1 pod
+curl http://$TRAEFIK_IP/v2 -> Should return details from an app-v2 pod
 ```
 
 # Test Cilium
@@ -27,6 +27,7 @@ apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-traefik-only
+  namespace: network-test
 spec:
   endpointSelector:
     matchLabels:
@@ -34,7 +35,7 @@ spec:
   ingress:
   - fromEndpoints:
     - matchLabels:
-        "k8s:io.kubernetes.pod.namespace": traefik # Adjust to your Traefik namespace
+        "k8s:io.kubernetes.pod.namespace": ingress # Adjust to your Traefik namespace
         app.kubernetes.io/name: traefik
     toPorts:
     - ports:
@@ -44,7 +45,12 @@ spec:
 
 Curl the endpoint via Traefik will work because it is allowed
 ```BASH
-curl http://<TRAEFIK_IP>/v1
+curl http://$TRAEFIK_IP/v1
 ```
 
-Identify pod or service IP address for `app-v1` and attempt to curl directly which will fail as Cilium will drop the packets at the eBPF layer
+Curl the endpoint within the cluster and from a temporary pod will be denied
+
+```BASH
+kubectl run curl-debug -it --rm --image=curlimages/curl -n network-test -- curl -m 15 -v http://app-v1-service.network-test.svc.cluster.local # timeout
+kubectl run curl-debug -it --rm --image=curlimages/curl -n network-test -- curl -m 15 -v http://app-v2-service.network-test.svc.cluster.local # connection is established 
+```
