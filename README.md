@@ -19,6 +19,10 @@ newgrp microk8s
 microk8s enable community
 microk8s addons repo list
 
+# enable traefik and metallb
+microk8s enable ingress
+microk8s enable metallb
+
 # cilium
 microk8s enable cilium
 microk8s cilium status
