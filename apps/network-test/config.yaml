@@ -1,0 +1,19 @@
+name: network-test
+project: default
+annotations:
+  argocd.argoproj.io/sync-wave: "10"
+source:
+  repoURL: git@github.com:seanmccorkle/microk8s-components.git
+  targetRevision: main
+  path: apps/network-test
+  kustomize:
+    version: v5.0.0
+destination:
+  server: https://kubernetes.default.svc
+  namespace: network-test
+syncPolicy:
+  # automated:
+  #   prune: true
+  #   selfHeal: true
+  syncOptions:
+    - CreateNamespace=true
