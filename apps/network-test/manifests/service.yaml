@@ -18,6 +18,6 @@ metadata:
 spec:
   ports:
   - port: 80
-    targetPort: 80
+    targetPort: 5678
   selector:
     app: app-v2
