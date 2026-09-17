@@ -51,6 +51,6 @@ curl http://$TRAEFIK_IP/v1
 Curl the endpoint within the cluster and from a temporary pod will be denied
 
 ```BASH
-kubectl run curl-debug -it --rm --image=curlimages/curl -n network-test -- curl -m 15 -v http://app-v1-service.network-test.svc.cluster.local # timeout
-kubectl run curl-debug -it --rm --image=curlimages/curl -n network-test -- curl -m 15 -v http://app-v2-service.network-test.svc.cluster.local # connection is established 
+kubectl run curl-debug -it --rm --restart=Never --image=alpine/curl -n network-test -- curl -m 5 -iv http://app-v1-service.network-test.svc.cluster.local # connection timeout
+kubectl run curl-debug -it --rm --restart=Never --image=alpine/curl -n network-test -- curl -m 5 -iv http://app-v2-service.network-test.svc.cluster.local # connection established
 ```
