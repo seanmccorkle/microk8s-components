@@ -1,0 +1,10 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: shinobi-buffering
+spec:
+  buffering:
+    maxRequestBodyBytes: 0  # Unlimited - allows heavy camera data streams
+    memRequestBodyBytes: 2097152  # 2MB in memory buffer
+    retryExpression: "IsNetworkError() && Attempts() < 2"
