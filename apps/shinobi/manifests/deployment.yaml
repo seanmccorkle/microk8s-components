@@ -22,7 +22,7 @@ spec:
         - containerPort: 8080
         volumeMounts:
         - name: shinobi-storage
-          mountPath: /opt/shinobi/videos
+          mountPath: /mnt/storage/shinobi/videos
       volumes:
       - name: shinobi-storage
         persistentVolumeClaim:
