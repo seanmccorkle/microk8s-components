@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: shinobi
-        image: shinobiinc/shinobi:latest
+        image: shinobisystems/shinobi:latest
         ports:
         - containerPort: 8080
         volumeMounts:
