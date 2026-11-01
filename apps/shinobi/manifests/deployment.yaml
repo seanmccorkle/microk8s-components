@@ -20,10 +20,33 @@ spec:
         image: shinobisystems/shinobi:latest
         ports:
         - containerPort: 8080
+        env:
+        - name: PLUGIN_KEYS
+          valueFrom:
+            secretKeyRef:
+              name: shinobi-secrets
+              key: plugin-keys
+        # Enable hardware acceleration in Shinobi
+        - name: ENABLE_HWACCEL
+          value: "true"
+        securityContext:
+          privileged: true  # Required for hardware acceleration access
         volumeMounts:
         - name: shinobi-storage
           mountPath: /mnt/storage/shinobi/videos
+        # Intel Quick Sync / VA-API hardware acceleration
+        - name: dev-dri
+          mountPath: /dev/dri
+        # NVIDIA GPU support (uncomment if using NVIDIA)
+        # resources:
+        #   limits:
+        #     nvidia.com/gpu: 1
       volumes:
       - name: shinobi-storage
         persistentVolumeClaim:
           claimName: shinobi-pvc
+      # Intel Quick Sync / VA-API device access
+      - name: dev-dri
+        hostPath:
+          path: /dev/dri
+          type: Directory

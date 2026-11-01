@@ -26,6 +26,13 @@ If you do not want your dashboard indexed by public search engines, install [Tai
 2. Install Tailscale on your mobile phone or laptop
 3. Access your Shinobi instance from anywhere in the world using the private Tailscale IP address assigned to your Ubuntu machine (e.g., http://100.x.y.z:8080)
 
+## Hardware Acceleration
+
+```
+sudo snap install ffmpeg
+kubectl apply -f manifests/secret.yaml
+```
+
 ## References
 [How to Access Shinobi outside your Network (LAN)](https://hub.shinobi.video/articles/view/pYUnteHIep5wUS0)<br>
 [Link 2](docs.shinobi.video/remote/vpn)<br>

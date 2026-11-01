@@ -1,0 +1,40 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shinobi-config
+data:
+  # Hardware Acceleration Configuration
+  # Shinobi supports multiple hardware acceleration methods:
+  #
+  # Intel Quick Sync (QSV) - Default configuration
+  #   - Uses /dev/dri devices
+  #   - Best for Intel CPUs with integrated graphics
+  #   - Supports H.264, H.265/HEVC encoding/decoding
+  #
+  # NVIDIA GPU (NVENC/NVDEC)
+  #   - Requires nvidia-docker runtime
+  #   - Add nvidia.com/gpu: 1 to resources.limits
+  #   - Best for dedicated NVIDIA GPUs
+  #
+  # VA-API (Video Acceleration API)
+  #   - Uses /dev/dri devices (same as QSV)
+  #   - Works with Intel, AMD, and some other GPUs
+  #
+  # FFmpeg hardware acceleration flags for Shinobi:
+  # For Intel QSV: -hwaccel qsv -c:v h264_qsv
+  # For NVIDIA: -hwaccel cuda -hwaccel_output_format cuda -c:v h264_cuvid
+  # For VA-API: -hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -hwaccel_output_format vaapi
+
+  hwaccel.conf: |
+    # Default hardware acceleration method
+    HWACCEL_METHOD=qsv
+
+    # Intel QSV encoder settings
+    QSV_ENCODER=h264_qsv
+    QSV_PRESET=veryfast
+    QSV_QUALITY=23
+
+    # Transcoding settings
+    ENABLE_TRANSCODING=true
+    TRANSCODE_THREADS=auto

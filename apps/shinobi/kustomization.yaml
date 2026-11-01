@@ -4,8 +4,10 @@ kind: Kustomization
 namespace: shinobi
 
 resources:
+  - manifests/configmap.yaml
   - manifests/deployment.yaml
   - manifests/ingress.yaml
   - manifests/middleware.yaml
   - manifests/pvc.yaml
+  - manifests/secret.yaml
   - manifests/service.yaml
