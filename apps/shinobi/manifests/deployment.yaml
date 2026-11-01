@@ -33,7 +33,7 @@ spec:
           privileged: true  # Required for hardware acceleration access
         volumeMounts:
         - name: shinobi-storage
-          mountPath: /mnt/storage/shinobi/videos
+          mountPath: /home/Shinobi/videos
         # Intel Quick Sync / VA-API hardware acceleration
         - name: dev-dri
           mountPath: /dev/dri

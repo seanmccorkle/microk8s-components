@@ -6,6 +6,8 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: microk8s-hostpath
+  volumeName: shinobi-pv  # Bind to specific PV
   resources:
     requests:
-      storage: 20Gi # Adjust based on how much video history you want to keep
+      storage: 1000Gi  # Must match PV capacity
