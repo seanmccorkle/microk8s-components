@@ -1,0 +1,34 @@
+# Kubernetes Secrets - NEVER commit these!
+**/secret.yaml
+**/secrets.yaml
+**/*-secret.yaml
+
+# Kubernetes credentials
+kubeconfig
+*.kubeconfig
+microk8s-config.yaml
+
+# SSH keys
+id_*
+*.pem
+*.key
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
