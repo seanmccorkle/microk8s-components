@@ -11,7 +11,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain  # Keep data if PVC is deleted
-  storageClassName: local-storage
+  storageClassName: shinobi-sc
   hostPath:
     path: /mnt/storage/shinobi  # Host path where videos will be stored
     type: DirectoryOrCreate  # Creates directory if it doesn't exist
