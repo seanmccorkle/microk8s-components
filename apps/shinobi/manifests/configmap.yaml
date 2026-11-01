@@ -32,7 +32,7 @@ data:
 
     # VA-API encoder settings
     VAAPI_DEVICE=/dev/dri/renderD128
-    VAAPI_ENCODER=h264_vaapi
+    VAAPI_ENCODER=h265_vaapi
     VAAPI_PRESET=medium
     VAAPI_QUALITY=23
 
