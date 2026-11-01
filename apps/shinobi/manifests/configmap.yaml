@@ -28,12 +28,13 @@ data:
 
   hwaccel.conf: |
     # Default hardware acceleration method
-    HWACCEL_METHOD=qsv
+    HWACCEL_METHOD=vaapi
 
-    # Intel QSV encoder settings
-    QSV_ENCODER=h264_qsv
-    QSV_PRESET=veryfast
-    QSV_QUALITY=23
+    # VA-API encoder settings
+    VAAPI_DEVICE=/dev/dri/renderD128
+    VAAPI_ENCODER=h264_vaapi
+    VAAPI_PRESET=medium
+    VAAPI_QUALITY=23
 
     # Transcoding settings
     ENABLE_TRANSCODING=true
