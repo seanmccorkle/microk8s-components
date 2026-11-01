@@ -8,6 +8,7 @@ resources:
   - manifests/deployment.yaml
   - manifests/ingress.yaml
   - manifests/middleware.yaml
+  - manifests/pv.yaml
   - manifests/pvc.yaml
   - manifests/secret.yaml
   - manifests/service.yaml
