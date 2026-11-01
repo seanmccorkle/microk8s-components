@@ -10,5 +10,7 @@ resources:
   - manifests/middleware.yaml
   - manifests/pv.yaml
   - manifests/pvc.yaml
+  - manifests/pv-db.yaml
+  - manifests/pvc-db.yaml
   - manifests/secret.yaml
   - manifests/service.yaml
