@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: shinobi
-        image: shinobisystems/shinobi:latest
+        image: registry.gitlab.com/shinobi-systems/shinobi:latest
         ports:
         - containerPort: 8080
         env:
@@ -36,9 +36,12 @@ spec:
           value: "iHD"  # Intel iHD driver for newer Intel GPUs
         securityContext:
           privileged: true  # Required for hardware acceleration access
+          supplementalGroups: [44, 991]  # video and render groups for /dev/dri access
         volumeMounts:
         - name: shinobi-storage
           mountPath: /home/Shinobi/videos
+        - name: shinobi-db
+          mountPath: /var/lib/mysql  # Persist embedded database
         # Intel Quick Sync / VA-API hardware acceleration
         - name: dev-dri
           mountPath: /dev/dri
@@ -50,6 +53,9 @@ spec:
       - name: shinobi-storage
         persistentVolumeClaim:
           claimName: shinobi-pvc
+      - name: shinobi-db
+        persistentVolumeClaim:
+          claimName: shinobi-db-pvc
       # Intel Quick Sync / VA-API device access
       - name: dev-dri
         hostPath:
