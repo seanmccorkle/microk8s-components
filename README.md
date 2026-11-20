@@ -74,35 +74,27 @@ This repository uses an ArgoCD ApplicationSet to automatically discover and depl
 
 ### Supported Source Types
 
-#### Helm Charts (External Repository)
+The current ApplicationSet configuration supports **path-based applications only**. All apps must have a `source.path` field pointing to a directory in this repository.
 
-For applications using Helm charts:
+#### Path-Based (Raw Manifests or Kustomize)
 
 ```yaml
-name: my-helm-app
+name: my-app
 project: default
-annotations:
-  argocd.argoproj.io/sync-wave: "5"
 source:
-  repoURL: https://charts.example.com
-  targetRevision: 1.2.3
-  chart: my-chart
-  helm:
-    releaseName: my-release
-    values: |
-      key: value
+  repoURL: git@github.com:seanmccorkle/microk8s-components.git
+  targetRevision: main
+  path: apps/my-app
 destination:
   server: https://kubernetes.default.svc
   namespace: my-app
-syncPolicy:
-  syncOptions:
-    - CreateNamespace=true
 ```
 
-#### Path-Based (Manifests/Kustomize)
+#### Kustomize + Helm (External Charts)
 
-For applications with manifests in Git:
+For Helm charts from external repositories, use Kustomize's `helmCharts` feature:
 
+**config.yaml:**
 ```yaml
 name: my-app
 project: default
@@ -117,23 +109,41 @@ destination:
   namespace: my-app
 ```
 
+**kustomization.yaml:**
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+  - name: my-chart
+    repo: https://charts.example.com
+    version: 1.2.3
+    releaseName: my-release
+    namespace: my-app
+    valuesFile: values.yaml
+```
+
 ### How It Works
 
 1. ApplicationSet scans `apps/*/config.yaml` files every 3 minutes
-2. Detects source type (chart vs path)
-3. Generates ArgoCD Application
-4. Deploys in sync-wave order
+2. Generates ArgoCD Application for each config
+3. ArgoCD syncs applications (manual sync order required)
 
 ### Applications
 
-| Name | Type | Source | Sync Wave | Status |
-|------|------|--------|-----------|--------|
-| external-secrets-operator | Helm | https://charts.external-secrets.io | 5 | Active |
-| network-test | Path | apps/network-test | 10 | Active |
-| shinobi | Path | apps/shinobi | - | Disabled |
+| Name | Type | Source | Status |
+|------|------|--------|--------|
+| external-secrets-operator | Kustomize+Helm | apps/external-secrets-operator | Active |
+| network-test | Path | apps/network-test | Active |
+| shinobi | Path | apps/shinobi | Disabled |
+
+**Notes:**
+- ESO uses Kustomize with `helmCharts` to pull the Helm chart from external repository
+- Sync-wave annotations are not supported by current ApplicationSet (simplified template)
+- Shinobi config has been disabled (`config.yaml.disabled`)
 
 **Documentation:**
-- External Secrets Operator: `apps/external-secrets-operator/ESO.md`
+- External Secrets Operator: [apps/external-secrets-operator/ESO.md](apps/external-secrets-operator/ESO.md)
 
 ### Adding a New Application
 
@@ -158,4 +168,3 @@ argocd app get external-secrets-operator
 # View ApplicationSet
 kubectl get applicationset microk8s-components -n argocd
 ```
-
