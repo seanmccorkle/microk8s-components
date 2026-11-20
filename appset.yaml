@@ -13,7 +13,6 @@ spec:
   goTemplateOptions: ["missingkey=error"]
 
   generators:
-    # Git Files generator - reads application config from each app directory
     - git:
         repoURL: git@github.com:seanmccorkle/microk8s-components.git
         revision: main
@@ -26,61 +25,17 @@ spec:
       labels:
         owner: seanmccorkle
         environment: sandbox
-      {{- if .annotations }}
-      annotations:
-        {{- range $key, $value := .annotations }}
-        {{ $key }}: {{ $value | quote }}
-        {{- end }}
-      {{- end }}
     spec:
       project: '{{.project | default "default"}}'
       source:
         repoURL: '{{.source.repoURL}}'
         targetRevision: '{{.source.targetRevision}}'
-        {{- if .source.chart }}
-        # Helm chart from external repository
         chart: '{{.source.chart}}'
-        {{- if .source.helm }}
-        helm:
-          {{- if .source.helm.releaseName }}
-          releaseName: '{{.source.helm.releaseName}}'
-          {{- end }}
-          {{- if .source.helm.values }}
-          values: |
-{{ .source.helm.values | indent 12 }}
-          {{- end }}
-        {{- end }}
-        {{- else }}
-        # Path-based source (manifests/Kustomize)
         path: '{{.source.path}}'
-        {{- if .source.kustomize }}
-        kustomize:
-          version: '{{.source.kustomize.version | default "v5.0.0"}}'
-        {{- end }}
-        {{- end }}
       destination:
         server: '{{.destination.server}}'
         namespace: '{{.destination.namespace}}'
       syncPolicy:
-        {{- if .syncPolicy }}
-        {{- if .syncPolicy.automated }}
-        automated:
-          prune: {{ .syncPolicy.automated.prune | default false }}
-          selfHeal: {{ .syncPolicy.automated.selfHeal | default false }}
-        {{- end }}
-        {{- if .syncPolicy.syncOptions }}
-        syncOptions:
-        {{- range .syncPolicy.syncOptions }}
-          - {{ . }}
-        {{- end }}
-        {{- else }}
         syncOptions:
           - CreateNamespace=true
           - PruneLast=true
-        {{- end }}
-        {{- else }}
-        syncOptions:
-          - CreateNamespace=true
-          - PruneLast=true
-        {{- end }}
-
