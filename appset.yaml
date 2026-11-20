@@ -13,9 +13,10 @@ spec:
   goTemplateOptions: ["missingkey=error"]
 
   generators:
+    # Git Files generator - reads application config from each app directory
     - git:
-        repoURL: git@github.com:seanmccorkle/microk8s-components.git
-        revision: main
+        repoURL: git@github.com/seanmccorkle/microk8s-components.git
+        revision: HEAD
         files:
           - path: "apps/*/config.yaml"
 
@@ -30,12 +31,14 @@ spec:
       source:
         repoURL: '{{.source.repoURL}}'
         targetRevision: '{{.source.targetRevision}}'
-        chart: '{{.source.chart}}'
         path: '{{.source.path}}'
       destination:
         server: '{{.destination.server}}'
         namespace: '{{.destination.namespace}}'
       syncPolicy:
+        # automated:
+        #   prune: true
+        #   selfHeal: true
         syncOptions:
           - CreateNamespace=true
-          - PruneLast=true
+          - PruneLast=true  # Deletes namespace last (after all resources)
