@@ -1,0 +1,21 @@
+name: external-secrets-operator
+project: default
+annotations:
+  argocd.argoproj.io/sync-wave: "5"
+source:
+  repoURL: https://charts.external-secrets.io
+  targetRevision: 0.10.8
+  chart: external-secrets
+  helm:
+    releaseName: external-secrets
+    valuesFile: values.yaml
+destination:
+  server: https://kubernetes.default.svc
+  namespace: external-secrets-system
+syncPolicy:
+  # automated:
+  #   prune: true
+  #   selfHeal: true
+  syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true

@@ -68,3 +68,94 @@ ssh -T git@github.com -i  id_ed25519_argocd
 
 **Note when configuring a GitHub repository, with SSH key, save as a credentials template**
 
+## ApplicationSet
+
+This repository uses an ArgoCD ApplicationSet to automatically discover and deploy applications from `apps/*/config.yaml` files.
+
+### Supported Source Types
+
+#### Helm Charts (External Repository)
+
+For applications using Helm charts:
+
+```yaml
+name: my-helm-app
+project: default
+annotations:
+  argocd.argoproj.io/sync-wave: "5"
+source:
+  repoURL: https://charts.example.com
+  targetRevision: 1.2.3
+  chart: my-chart
+  helm:
+    releaseName: my-release
+    values: |
+      key: value
+destination:
+  server: https://kubernetes.default.svc
+  namespace: my-app
+syncPolicy:
+  syncOptions:
+    - CreateNamespace=true
+```
+
+#### Path-Based (Manifests/Kustomize)
+
+For applications with manifests in Git:
+
+```yaml
+name: my-app
+project: default
+source:
+  repoURL: git@github.com:seanmccorkle/microk8s-components.git
+  targetRevision: main
+  path: apps/my-app
+  kustomize:
+    version: v5.0.0
+destination:
+  server: https://kubernetes.default.svc
+  namespace: my-app
+```
+
+### How It Works
+
+1. ApplicationSet scans `apps/*/config.yaml` files every 3 minutes
+2. Detects source type (chart vs path)
+3. Generates ArgoCD Application
+4. Deploys in sync-wave order
+
+### Applications
+
+| Name | Type | Source | Sync Wave | Status |
+|------|------|--------|-----------|--------|
+| external-secrets-operator | Helm | https://charts.external-secrets.io | 5 | Active |
+| network-test | Path | apps/network-test | 10 | Active |
+| shinobi | Path | apps/shinobi | - | Disabled |
+
+**Documentation:**
+- External Secrets Operator: `apps/external-secrets-operator/ESO.md`
+
+### Adding a New Application
+
+1. Create `apps/my-app/config.yaml`
+2. Commit and push
+3. Wait 3 minutes or force refresh:
+
+```bash
+kubectl annotate applicationset microk8s-components -n argocd \
+  argocd.argoproj.io/refresh=normal --overwrite
+```
+
+### Verification
+
+```bash
+# List applications
+kubectl get applications -n argocd
+
+# Check application status
+argocd app get external-secrets-operator
+
+# View ApplicationSet
+kubectl get applicationset microk8s-components -n argocd
+```
+
