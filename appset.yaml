@@ -31,12 +31,7 @@ spec:
       source:
         repoURL: '{{.source.repoURL}}'
         targetRevision: '{{.source.targetRevision}}'
-        chart: '{{.source.chart}}'
         path: '{{.source.path}}'
-        helm:
-          releaseName: '{{.source.helm.releaseName}}'
-          values: |
-{{.source.helm.values | indent 12}}
       destination:
         server: '{{.destination.server}}'
         namespace: '{{.destination.namespace}}'
