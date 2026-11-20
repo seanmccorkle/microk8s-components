@@ -8,7 +8,69 @@ source:
   chart: external-secrets
   helm:
     releaseName: external-secrets
-    valuesFile: values.yaml
+    values: |
+      installCRDs: true
+
+      replicaCount: 1
+
+      image:
+        repository: ghcr.io/external-secrets/external-secrets
+        pullPolicy: IfNotPresent
+
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          cpu: 100m
+          memory: 256Mi
+
+      podSecurityContext:
+        fsGroup: 65534
+        runAsNonRoot: true
+        runAsUser: 65534
+
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 65534
+
+      serviceAccount:
+        create: true
+        name: external-secrets
+
+      webhook:
+        create: true
+        port: 9443
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            cpu: 100m
+            memory: 256Mi
+
+      certController:
+        create: true
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            cpu: 100m
+            memory: 256Mi
+
+      prometheus:
+        enabled: true
+        service:
+          port: 8080
+
+      extraArgs:
+        - --concurrent=10
 destination:
   server: https://kubernetes.default.svc
   namespace: external-secrets-system
