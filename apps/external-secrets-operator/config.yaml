@@ -1,0 +1,9 @@
+name: external-secrets-operator
+project: default
+source:
+  repoURL: git@github.com:seanmccorkle/microk8s-components.git
+  targetRevision: main
+  path: apps/external-secrets-operator
+destination:
+  server: https://kubernetes.default.svc
+  namespace: external-secrets-system
