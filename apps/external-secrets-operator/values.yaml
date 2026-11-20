@@ -1,16 +1,8 @@
 # External Secrets Operator Helm Values for v2.15.0
 
-# Install CRDs via Helm
-installCRDs: true
-
-# Explicitly enable all CRD types
-crds:
-  createClusterExternalSecret: true
-  createClusterSecretStore: true
-  createSecretStore: true
-  createClusterGenerator: true
-  createClusterPushSecret: true
-  createPushSecret: true
+# Don't install CRDs via Helm - they're too large and exceed annotation size limits
+# Install manually: kubectl apply -f https://raw.githubusercontent.com/external-secrets/external-secrets/main/deploy/crds/bundle.yaml
+installCRDs: false
 
 # Single replica for microk8s
 replicaCount: 1
