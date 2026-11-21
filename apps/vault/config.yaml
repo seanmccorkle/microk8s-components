@@ -1,0 +1,9 @@
+name: vault
+project: default
+source:
+  repoURL: git@github.com:seanmccorkle/microk8s-components.git
+  targetRevision: main
+  path: apps/vault
+destination:
+  server: https://kubernetes.default.svc
+  namespace: vault

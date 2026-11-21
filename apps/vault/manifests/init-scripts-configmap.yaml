@@ -1,0 +1,54 @@
+---
+# ConfigMap with Vault initialization and seed scripts
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-init-scripts
+  namespace: vault
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+data:
+  init.sh: |
+    #!/bin/sh
+    set -e
+
+    echo "Waiting for Vault to be ready..."
+    until vault status >/dev/null 2>&1; do
+      echo "Vault not ready, waiting..."
+      sleep 2
+    done
+
+    echo "Vault is ready!"
+
+    # Enable KV v2 secrets engine
+    vault secrets enable -path=secret kv-v2 || echo "KV v2 already enabled"
+
+    # Enable Kubernetes auth
+    vault auth enable kubernetes || echo "Kubernetes auth already enabled"
+
+    # Configure Kubernetes auth
+    vault write auth/kubernetes/config \
+      kubernetes_host="https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT" \
+      kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt \
+      token_reviewer_jwt=@/var/run/secrets/kubernetes.io/serviceaccount/token
+
+    # Create policy for External Secrets Operator
+    vault policy write external-secrets - <<EOF
+    # Allow reading secrets from the 'secret' mount
+    path "secret/data/*" {
+      capabilities = ["read", "list"]
+    }
+
+    path "secret/metadata/*" {
+      capabilities = ["read", "list"]
+    }
+    EOF
+
+    # Create Kubernetes auth role for External Secrets Operator
+    vault write auth/kubernetes/role/external-secrets \
+      bound_service_account_names=external-secrets-vault \
+      bound_service_account_namespaces=external-secrets-system \
+      policies=external-secrets \
+      ttl=24h
+
+    echo "Vault configuration complete!"

@@ -1,0 +1,31 @@
+---
+# Job to initialize Vault (runs after Vault is deployed)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vault-init
+  namespace: vault
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  template:
+    spec:
+      serviceAccountName: vault
+      restartPolicy: OnFailure
+      containers:
+        - name: vault-init
+          image: hashicorp/vault:1.17
+          command: ["/bin/sh", "-c", "/scripts/init.sh"]
+          env:
+            - name: VAULT_ADDR
+              value: "http://vault:8200"
+            - name: VAULT_TOKEN
+              value: "root"  # Dev mode only - use proper auth in production!
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+      volumes:
+        - name: scripts
+          configMap:
+            name: vault-init-scripts
+            defaultMode: 0755
